@@ -83,7 +83,7 @@ void menu()
 void inicializar()
 {
 
-	// provisÛrio porque n„o libera a memoria usada pela arvore
+	// provis√≥rio porque n√£o libera a memoria usada pela arvore
 	raiz = NULL;
 
 	cout << "Arvore inicializada \n";
@@ -239,45 +239,64 @@ NO* buscarElementoArvoreComPai(NO* no, int valor, NO*& pai)
 
 
 void removerElementoArvore(NO* no, int valor) {
-	NO* pai = NULL;
+NO* pai = NULL;
 	NO* atual = buscarElementoArvoreComPai(no, valor, pai);
 	if (atual == NULL) {
 		cout << "Elemento nao encontrado \n";
 		return;
 	}
 
-
-	// caso 1: sem filhos	
-	
-
-	// caso 2: um filho	
-	
-
-	// caso 3: dois filhos
-
-	// procura o elmento mais a esquerda da sub-arvore da direita
-	NO* sucessor = atual->dir;
-	NO* paiSucessor = atual;
-	while (sucessor->esq != NULL) {
-		paiSucessor = sucessor;
-		sucessor = sucessor->esq;
+		
+	if (atual->esq == NULL && atual->dir == NULL) {
+		if (pai == NULL) {
+			raiz = NULL;
+		}
+		else if (pai->esq == atual) {
+			pai->esq = NULL;
+		}
+		else {
+			pai->dir = NULL;
+		}
+		free(atual);
+		cout << "Elemento removido\n";
+		return;
 	}
 
-	// copia o valor do sucessor para o no atual
-	atual->valor = sucessor->valor;
+	
+	if (atual->esq == NULL || atual->dir == NULL) {
+		NO* filho = (atual->esq != NULL) ? atual->esq : atual->dir;
+		if (pai == NULL) {
+			raiz = filho;
+		}
+		else if (pai->esq == atual) {
+			pai->esq = filho;
+		}
+		else {
+			pai->dir = filho;
+		}
+		free(atual);
+		cout << "Elemento com 1 filho removido: " << valor << endl;
+		return;
+	}
 
-	// se existir uma sub-arvore a direita do sucessor , entao
-	// ela deve ser ligada ao pai do sucessor
-	if (sucessor->dir != NULL)
-	{
-		paiSucessor->esq = sucessor->dir;
+	
+	NO* aux = atual->dir;
+	NO* paiAux = atual;
+	while (aux->esq != NULL) {
+		paiAux = aux;
+		aux = aux->esq;
+	}
+
+	atual->valor = aux->valor;
+	if (paiAux == atual) {
+		paiAux->dir = aux->dir;
 	}
 	else {
-		paiSucessor->esq = NULL;
+		paiAux->esq = aux->dir;
 	}
 
-	//libera memoria
-	free(sucessor);
+	free(aux);
+	cout << "Elemento trocado: " << valor << endl;
 
 
 }
